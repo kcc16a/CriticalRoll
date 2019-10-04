@@ -2,10 +2,15 @@ package com.example.criticalroll;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Random;
 
@@ -13,6 +18,8 @@ public class MainActivity extends AppCompatActivity {
     private ImageView imageViewDice;
     private TextView critHit;
     private Random rng =  new Random();
+    private FloatingActionButton floatingActionButton;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,12 +31,35 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 rollDice();
+
+                SharedPreferences sharedPref = getSharedPreferences(getString(R.string.shared_prefs_key), Context.MODE_PRIVATE);
+
+                int defaultValue = getResources().getInteger(R.integer.saved_times_pressed_default_key);
+                int clicks = sharedPref.getInt(getString(R.string.saved_button_press_count_key), defaultValue);
+
+                clicks++;
+
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putInt("howMany", clicks);
+                editor.commit();
+
+
+            }
+
+        });
+
+        floatingActionButton = findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(MainActivity.this, CountActivity.class));
             }
         });
     }
 
     private void rollDice(){
         int randomNumber = rng.nextInt(20) + 1;
+
 
         switch(randomNumber) {
             case 1:
@@ -96,4 +126,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
+
 }
